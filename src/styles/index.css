@@ -214,6 +214,7 @@ body {
   "submit reset";
   gap: 2rem;
   width: 100%;
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .add-form__input {

@@ -5,6 +5,8 @@ import project from './project'
 
 import changeMainState from './sidebarChangeMain'
 
+import main from './main'
+
 const createProjectSection = (() => {
   const projectSection = document.createElement('section')
   projectSection.className = 'sidebar__project-section'
@@ -34,6 +36,7 @@ const createProjectSection = (() => {
     deleteButton.addEventListener('click', (e) => {
       e.stopPropagation()
       newProject.remove()
+      main.innerHTML = ''
     })
 
     const newMainSectionTitle = addForm.querySelector('.add-form__input').value

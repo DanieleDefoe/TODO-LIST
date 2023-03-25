@@ -27,7 +27,7 @@ const createTodoSection = (() => {
   todoSectionContent.forEach((content, index) => {
     const contentDiv = document.createElement('button')
     contentDiv.className = 'sidebar__todo-div'
-    contentDiv.id = content.title.replace(/\s/, '-')
+    contentDiv.id = content.title.replace(/\W+/g, '-').toUpperCase()
 
     if (index === 0) contentDiv.className = 'sidebar__todo-div sidebar__todo-div_active'
 
