@@ -1,7 +1,6 @@
 /* eslint-disable max-len */
 import inboxSection from './inboxSection'
 
-import addButton from './inboxAddButton'
 import addForm from './inboxAddForm'
 import task from './task'
 
@@ -44,7 +43,7 @@ const createMain = (() => {
       calendarInput.className = 'task__date'
       calendarInput.addEventListener('change', () => {
         noDateText.textContent = calendarInput.value.split('-').reverse().join('/')
-        calendarInput.remove()
+        calendarInput.remove() // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         secondSection.prepend(noDateText)
       })
       secondSection.prepend(calendarInput)
