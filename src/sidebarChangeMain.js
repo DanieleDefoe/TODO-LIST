@@ -21,8 +21,6 @@ inboxSection.querySelectorAll('.task').forEach((task) => {
 
 const generatedSection = inboxSection.cloneNode('.inbox-section__title', '.inbox__project-container-button')
 
-const createdPages = []
-
 const todaySection = inboxSection.cloneNode(true)
 const thisWeekSection = inboxSection.cloneNode(true)
 todaySection.querySelector('.inbox__project-container-button').remove()
@@ -38,7 +36,6 @@ const changeMainState = (sidebarButton) => {
   main.innerHTML = ''
 
   const identifier = sidebarButton.getAttribute('data-id') || sidebarButton.id.replace(/-+/g, ' ')
-  const key = sidebarButton.outerHTML
 
   if (identifier === 'TODAY') {
     todaySection.querySelectorAll('.task').forEach((task) => {
@@ -64,13 +61,14 @@ const changeMainState = (sidebarButton) => {
   } else if (identifier === 'TODAY') {
     todaySection.firstElementChild.textContent = identifier
     main.append(todaySection)
-  } else if (!localStorage.getItem(key)) {
+  } else if (!localStorage.getItem(identifier)) {
     const clone = generatedSection.cloneNode(true)
+    clone.querySelectorAll('.task').forEach((task) => task.remove())
     clone.firstElementChild.textContent = identifier
-    createdPages.push(clone)
-    localStorage.setItem('projects', createdPages)
-    console.log(localStorage.projects)
-    // main.insertAdjacentHTML('afterbegin', localStorage.getItem('projects').find((el) => `${el}`.includes(identifier)))
+    localStorage.setItem(identifier, clone.outerHTML)
+    main.insertAdjacentHTML('afterbegin', localStorage.getItem(identifier))
+  } else {
+    main.insertAdjacentHTML('afterbegin', localStorage.getItem(identifier))
   }
 }
 

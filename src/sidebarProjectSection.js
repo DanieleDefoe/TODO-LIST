@@ -31,7 +31,6 @@ const createProjectSection = (() => {
   projectSectionContainer.addEventListener('click', (e) => {
     e.stopPropagation()
     if (e.target.className === 'project__delete') {
-      console.log('DELETE IT !')
       localStorage.removeItem(e.target.parentElement.outerHTML)
       e.target.parentElement.remove()
       main.innerHTML = ''

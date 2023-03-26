@@ -52,9 +52,16 @@ const createMain = (() => {
         e.target.remove()
       } else if (e.target.className === 'task__delete') {
         localStorage.removeItem(e.target.closest('.task').outerHTML)
-        e.target.parentElement.parentElement.remove()
+        todayTasks.splice(todayTasks.indexOf(e.target.closest('.task')), 1)
+        thisWeekTasks.splice(thisWeekTasks.indexOf(e.target.closest('.task')), 1)
+        e.target.closest('.task').remove()
       }
     }
+    localStorage.setItem(document.querySelector('.inbox-section__title').textContent, document.querySelector('.inbox-section').outerHTML)
+  })
+
+  main.addEventListener('keypress', () => {
+    localStorage.setItem(document.querySelector('.inbox-section__title').textContent, document.querySelector('.inbox-section').outerHTML)
   })
 
   const closeFormOpenButton = (e) => {
