@@ -4,6 +4,11 @@ import inboxSection from './inboxSection'
 import addForm from './inboxAddForm'
 import task from './task'
 
+import findDateDelta from './findDateDelta'
+
+const todayTasks = []
+const thisWeekTasks = []
+
 const createMain = (() => {
   const main = document.createElement('main')
   main.className = 'main'
@@ -15,45 +20,42 @@ const createMain = (() => {
     if (e.target) {
       if (e.target.className === 'inbox__project-container-button' || e.target.parentElement.className === 'inbox__project-container-button') {
         // e.currentTarget.querySelector('.inbox__project-container-button').remove()
-        main.firstElementChild.append(addForm)
+        main.firstElementChild.insertBefore(addForm, document.querySelector('.inbox__project-container-button'))
+      } else if (e.target.classList.contains('task__check')) {
+        localStorage.removeItem(e.target.closest('.task').outerHTML)
+        e.target.classList.toggle('task__check_active')
+        e.target.nextElementSibling.classList.toggle('task__title_done')
+        localStorage.setItem(e.target.closest('.task').outerHTML, e.target.closest('.task').outerHTML)
+      } else if (e.target.className === 'task__no-date') {
+        localStorage.removeItem(e.target.closest('.task').outerHTML)
+        const calendarInput = document.createElement('input')
+        calendarInput.type = 'date'
+        calendarInput.className = 'task__date'
+        e.target.closest('.task').querySelector('.task__second-section').prepend(calendarInput)
+        calendarInput.addEventListener('input', () => {
+          e.target.textContent = calendarInput.value.split('-').join('/')
+          const currentDate = new Date()
+          const plannedDate = new Date(calendarInput.value)
+
+          const dateDelta = findDateDelta(currentDate, plannedDate)
+
+          if (dateDelta >= 0 && dateDelta <= 1) {
+            todayTasks.push(main.firstElementChild.firstElementChild.nextElementSibling)
+          } else if (dateDelta <= 7 && dateDelta > 1) {
+            thisWeekTasks.push(main.firstElementChild.firstElementChild.nextElementSibling)
+          }
+
+          calendarInput.closest('.task').querySelector('.task__second-section').prepend(e.target)
+          calendarInput.remove()
+          localStorage.setItem(e.target.closest('.task').outerHTML, e.target.closest('.task').outerHTML)
+        })
+        e.target.remove()
+      } else if (e.target.className === 'task__delete') {
+        localStorage.removeItem(e.target.closest('.task').outerHTML)
+        e.target.parentElement.parentElement.remove()
       }
     }
   })
-
-  const attachListenersToNewTask = (newTask) => {
-    const checkCircle = newTask.querySelector('.task__check')
-    const taskTitle = newTask.querySelector('.task__title')
-    const noDateText = newTask.querySelector('.task__no-date')
-    const secondSection = newTask.querySelector('.task__second-section')
-    const deleteButton = newTask.querySelector('.task__delete')
-
-    taskTitle.textContent = main.querySelector('.add-form__input').value
-
-    checkCircle.addEventListener('click', (e) => {
-      e.stopPropagation()
-      checkCircle.classList.toggle('task__check_active')
-      taskTitle.classList.toggle('task__title_done')
-    })
-
-    noDateText.addEventListener('click', (e) => {
-      e.stopPropagation()
-      noDateText.remove()
-      const calendarInput = document.createElement('input')
-      calendarInput.type = 'date'
-      calendarInput.className = 'task__date'
-      calendarInput.addEventListener('change', () => {
-        noDateText.textContent = calendarInput.value.split('-').reverse().join('/')
-        calendarInput.remove() // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        secondSection.prepend(noDateText)
-      })
-      secondSection.prepend(calendarInput)
-    })
-
-    deleteButton.addEventListener('click', (e) => {
-      e.stopPropagation()
-      newTask.remove()
-    })
-  }
 
   const closeFormOpenButton = (e) => {
     e.stopPropagation()
@@ -61,8 +63,9 @@ const createMain = (() => {
     if (e.type === 'submit') {
       e.preventDefault()
       const newTask = task.cloneNode(true)
-      attachListenersToNewTask(newTask)
+      newTask.querySelector('.task__title').textContent = main.querySelector('.add-form__input').value
       main.firstElementChild.insertBefore(newTask, main.firstElementChild.firstElementChild.nextElementSibling)
+      localStorage.setItem(newTask.outerHTML, newTask.outerHTML)
       target.reset()
     }
     target.remove()
@@ -72,7 +75,16 @@ const createMain = (() => {
   main.addEventListener('submit', closeFormOpenButton)
   main.addEventListener('reset', closeFormOpenButton)
 
+  Object.keys(localStorage).forEach((key) => {
+    if (key.includes('class="task')) {
+      inboxSection.insertAdjacentHTML('afterbegin', key)
+      inboxSection.insertBefore(inboxSection.firstElementChild, inboxSection.firstElementChild.nextElementSibling.nextElementSibling)
+    }
+  })
+
   return main
 })()
 
 export default createMain
+
+export { todayTasks, thisWeekTasks }

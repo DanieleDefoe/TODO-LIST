@@ -1,37 +1,76 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable import/no-duplicates */
 //  MOVE EVERY FUCKING EVENT LISTENER TO MAIN
 import main from './main'
 
 import inboxSection from './inboxSection'
 
-const createdPages = {}
+import { todayTasks, thisWeekTasks } from './main'
+
+import findDateDelta from './findDateDelta'
+
+inboxSection.querySelectorAll('.task').forEach((task) => {
+  if (todayTasks.indexOf(task) === -1
+  && new Date(task.querySelector('.task__no-date').textContent).getDate() == new Date().getDate()) {
+    todayTasks.push(task.cloneNode(true))
+  } else if (thisWeekTasks.indexOf(task) === -1
+  && findDateDelta(new Date(task.querySelector('.task__no-date').textContent), new Date()) <= 7) {
+    thisWeekTasks.push(task.cloneNode(true))
+  }
+})
+
 const generatedSection = inboxSection.cloneNode('.inbox-section__title', '.inbox__project-container-button')
 
-const todayWeekSection = inboxSection.cloneNode('.inbox-section__title')
-todayWeekSection.children[1].remove()
+const createdPages = []
+
+const todaySection = inboxSection.cloneNode(true)
+const thisWeekSection = inboxSection.cloneNode(true)
+todaySection.querySelector('.inbox__project-container-button').remove()
+thisWeekSection.querySelector('.inbox__project-container-button').remove()
 
 const changeMainState = (sidebarButton) => {
   if (sidebarButton.classList.contains('sidebar__todo-div_active')) return
-  document.querySelector('.sidebar__todo-div_active').classList.remove('sidebar__todo-div_active')
+  if (document.querySelector('.sidebar__todo-div_active')) {
+    document.querySelector('.sidebar__todo-div_active').classList.remove('sidebar__todo-div_active')
+  }
   sidebarButton.classList.add('sidebar__todo-div_active')
 
   main.innerHTML = ''
 
   const identifier = sidebarButton.getAttribute('data-id') || sidebarButton.id.replace(/-+/g, ' ')
-  const key = sidebarButton.innerHTML
+  const key = sidebarButton.outerHTML
 
-  console.log(todayWeekSection)
+  if (identifier === 'TODAY') {
+    todaySection.querySelectorAll('.task').forEach((task) => {
+      if (todayTasks.indexOf(task) === -1) task.remove()
+    })
+    todayTasks.forEach((task) => {
+      todaySection.append(task.cloneNode(true))
+    })
+  } else if (identifier === 'THIS WEEK') {
+    thisWeekSection.querySelectorAll('.task').forEach((task) => {
+      if (todayTasks.indexOf(task) === -1) task.remove()
+    })
+    thisWeekTasks.forEach((task) => {
+      thisWeekSection.append(task.cloneNode(true))
+    })
+  }
 
   if (identifier === 'INBOX') {
     main.append(inboxSection)
-  } else if (identifier === 'TODAY' || identifier === 'THIS WEEK') {
-    todayWeekSection.firstElementChild.textContent = identifier
-    main.append(todayWeekSection)
-  } else if (!Object.keys(createdPages).includes(key)) {
-    generatedSection.firstElementChild.textContent = identifier
-    createdPages[key] = generatedSection.cloneNode(true)
-    main.append(createdPages[key])
-  } else {
-    main.append(createdPages[key])
+  } else if (identifier === 'THIS WEEK') {
+    thisWeekSection.firstElementChild.textContent = identifier
+    main.append(thisWeekSection)
+  } else if (identifier === 'TODAY') {
+    todaySection.firstElementChild.textContent = identifier
+    main.append(todaySection)
+  } else if (!localStorage.getItem(key)) {
+    const clone = generatedSection.cloneNode(true)
+    clone.firstElementChild.textContent = identifier
+    createdPages.push(clone)
+    localStorage.setItem('projects', createdPages)
+    console.log(localStorage.projects)
+    // main.insertAdjacentHTML('afterbegin', localStorage.getItem('projects').find((el) => `${el}`.includes(identifier)))
   }
 }
 

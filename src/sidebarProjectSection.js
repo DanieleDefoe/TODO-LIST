@@ -22,36 +22,38 @@ const createProjectSection = (() => {
 
   projectSectionContainer.append(addButton)
 
-  addButton.addEventListener('click', () => {
+  addButton.addEventListener('click', (e) => {
+    e.stopPropagation()
     addButton.remove()
     projectSectionContainer.append(addForm)
   })
 
-  const attachListenersToNewProject = (newProject) => {
-    newProject.addEventListener('click', () => changeMainState(newProject))
-
-    const deleteButton = newProject.querySelector('.project__delete')
-    const projectTitle = newProject.querySelector('.project__left-section-title')
-
-    deleteButton.addEventListener('click', (e) => {
-      e.stopPropagation()
-      newProject.remove()
+  projectSectionContainer.addEventListener('click', (e) => {
+    e.stopPropagation()
+    if (e.target.className === 'project__delete') {
+      console.log('DELETE IT !')
+      localStorage.removeItem(e.target.parentElement.outerHTML)
+      e.target.parentElement.remove()
       main.innerHTML = ''
-    })
-
-    const newMainSectionTitle = addForm.querySelector('.add-form__input').value
-
-    newProject.setAttribute('data-id', newMainSectionTitle.toUpperCase())
-
-    projectTitle.textContent = newMainSectionTitle
-  }
+    }
+    if (e.target.classList.contains('project') || e.target.closest('.project')) {
+      if (e.target.closest('.project')) {
+        e.target.closest('.project').setAttribute('data-id', e.target.closest('.project').querySelector('.project__left-section-title').textContent.toUpperCase())
+        changeMainState(e.target.closest('.project'))
+        return
+      }
+      e.target.setAttribute('data-id', e.target.querySelector('.project__left-section-title').textContent.toUpperCase())
+      changeMainState(e.target)
+    }
+  })
 
   const closeFormOpenButton = (e) => {
     const { target } = e
     if (e.type === 'submit') {
       e.preventDefault()
       const newProject = project.cloneNode(true)
-      attachListenersToNewProject(newProject)
+      newProject.querySelector('.project__left-section-title').textContent = addForm.querySelector('.add-form__input').value
+      localStorage.setItem(newProject.outerHTML, newProject.outerHTML)
       projectSectionContainer.insertBefore(newProject, projectSectionContainer.firstElementChild)
       target.reset()
     }
@@ -63,6 +65,13 @@ const createProjectSection = (() => {
   addForm.addEventListener('reset', closeFormOpenButton)
 
   projectSection.append(projectSectionTitle, projectSectionContainer)
+
+  Object.keys(localStorage).forEach((key) => {
+    if (key.includes('class="project"')) {
+      const newProject = localStorage.getItem(key)
+      projectSectionContainer.insertAdjacentHTML('afterbegin', newProject)
+    }
+  })
 
   return projectSection
 })()

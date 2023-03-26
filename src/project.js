@@ -13,7 +13,7 @@ const createProject = (() => {
   leftSectionTitle.className = 'project__left-section-title'
   leftSection.append(leftSectionIcon, leftSectionTitle)
 
-  const deleteButton = document.createElement('button')
+  const deleteButton = document.createElement('div')
   deleteButton.className = 'project__delete'
 
   project.append(leftSection, deleteButton)

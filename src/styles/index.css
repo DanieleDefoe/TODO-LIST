@@ -25,7 +25,7 @@ body {
 /* CONTENT START */
 .content {
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   display: grid;
   grid-template-areas:
   "header header header"
@@ -75,6 +75,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4rem;
+  overflow-y: auto;
 }
 
 .sidebar__todo-section {
@@ -152,6 +153,7 @@ body {
   display: flex;
   justify-content: center;
   padding: 0 10rem;
+  overflow-y: auto;
 }
 
 .inbox-section, .today-section, .this-week-section {
