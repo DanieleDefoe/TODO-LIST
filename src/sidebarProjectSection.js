@@ -29,19 +29,18 @@ const createProjectSection = (() => {
   })
 
   projectSectionContainer.addEventListener('click', (e) => {
-    e.stopPropagation()
     if (e.target.className === 'project__delete') {
+      e.stopPropagation()
       localStorage.removeItem(e.target.parentElement.outerHTML)
+      localStorage.removeItem(e.target.parentElement.querySelector('.project__left-section-title').textContent.toUpperCase())
       e.target.parentElement.remove()
       main.innerHTML = ''
     }
     if (e.target.classList.contains('project') || e.target.closest('.project')) {
       if (e.target.closest('.project')) {
-        e.target.closest('.project').setAttribute('data-id', e.target.closest('.project').querySelector('.project__left-section-title').textContent.toUpperCase())
         changeMainState(e.target.closest('.project'))
         return
       }
-      e.target.setAttribute('data-id', e.target.querySelector('.project__left-section-title').textContent.toUpperCase())
       changeMainState(e.target)
     }
   })
@@ -52,6 +51,7 @@ const createProjectSection = (() => {
       e.preventDefault()
       const newProject = project.cloneNode(true)
       newProject.querySelector('.project__left-section-title').textContent = addForm.querySelector('.add-form__input').value
+      newProject.setAttribute('data-id', newProject.querySelector('.project__left-section-title').textContent.toUpperCase())
       localStorage.setItem(newProject.outerHTML, newProject.outerHTML)
       projectSectionContainer.insertBefore(newProject, projectSectionContainer.firstElementChild)
       target.reset()

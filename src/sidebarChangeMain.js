@@ -31,7 +31,9 @@ const changeMainState = (sidebarButton) => {
   if (document.querySelector('.sidebar__todo-div_active')) {
     document.querySelector('.sidebar__todo-div_active').classList.remove('sidebar__todo-div_active')
   }
+  localStorage.removeItem(sidebarButton.outerHTML, sidebarButton.outerHTML)
   sidebarButton.classList.add('sidebar__todo-div_active')
+  localStorage.setItem(sidebarButton.outerHTML, sidebarButton.outerHTML)
 
   main.innerHTML = ''
 

@@ -16,7 +16,6 @@ const createMain = (() => {
   main.append(inboxSection)
 
   main.addEventListener('click', (e) => {
-    e.stopPropagation()
     if (e.target) {
       if (e.target.className === 'inbox__project-container-button' || e.target.parentElement.className === 'inbox__project-container-button') {
         // e.currentTarget.querySelector('.inbox__project-container-button').remove()
